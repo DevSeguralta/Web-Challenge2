@@ -1,0 +1,25 @@
+CREATE DATABASE veiculosBD;
+
+CREATE TABLE Marcas (
+  id   int NOT NULL AUTO_INCREMENT,
+  nome varchar(300) NOT NULL
+  PRIMARY KEY(Id)
+);
+
+CREATE TABLE Veiculos (
+  id          	  int NOT NULL AUTO_INCREMENT,
+  marcaID    	  int,
+  veiculo     	  varchar(150) NOT NULL,
+  ano         	  varchar(4),
+  modelo      	  varchar(4),
+  descricao   	  varchar(65535),
+  vendido         bit(1),
+  dataCriacao     datetime NOT NULL,
+  dataAtualizacao datetime,
+  dataVenda       datetime,
+  dataExclusao    datetime,
+  PRIMARY KEY(id),
+  FOREIGN KEY (marcaID) REFERENCES Marcas(id)
+);
+
+
