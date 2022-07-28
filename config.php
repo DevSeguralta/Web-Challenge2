@@ -6,5 +6,6 @@
     $name = 'veiculosbd';
     
     $conexao = new mysqli($host,$username,$password,$name);
+	
 
 ?>
