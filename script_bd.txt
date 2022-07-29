@@ -1,12 +1,14 @@
-CREATE DATABASE veiculosBD;
+CREATE DATABASE veiculosbd;
 
-CREATE TABLE Marcas (
+USE veiculosbd;
+
+CREATE TABLE marcas (
   id   int NOT NULL AUTO_INCREMENT,
-  nome varchar(300) NOT NULL
-  PRIMARY KEY(Id)
+  nome varchar(300) NOT NULL,
+  PRIMARY KEY(id)
 );
 
-CREATE TABLE Veiculos (
+CREATE TABLE veiculos (
   id          	  int NOT NULL AUTO_INCREMENT,
   marcaID    	  int,
   veiculo     	  varchar(150) NOT NULL,
@@ -19,7 +21,6 @@ CREATE TABLE Veiculos (
   dataVenda       datetime,
   dataExclusao    datetime,
   PRIMARY KEY(id),
-  FOREIGN KEY (marcaID) REFERENCES Marcas(id)
+  FOREIGN KEY (marcaID) REFERENCES marcas(id)
 );
-
 

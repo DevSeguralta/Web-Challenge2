@@ -1,92 +1,147 @@
 <?php
 
-	include 'config.php';
-	
-	if(isset($_POST['cadastrar']))
-	{
-		
-		//$marca = $_POST['marcaID'];
-		$marca = '1';
-		$veiculo = $_POST['veiculo'];
-        $ano = $_POST['ano'];
-		$modelo = $_POST['modelo'];
-		$descricao = $_POST['descricao'];
-		$vendido = $_POST['vendido'] ? '1' : '0';
-		$dataCriacao = 'sysdate()';
-		$dataVenda = $vendido ? 'sysdate()' : '';
-		
-		$sql = "INSERT INTO veiculos(marcaID,veiculo,ano,modelo,descricao,vendido,dataCriacao) 
-					 VALUES ('$marca','$veiculo','$ano','$modelo','$descricao', 1, sysdate())";
-		
-		$query = $conexao->query($sql);
-	}
-	
-	
-	if(isset($_GET['id']))
-	{
-		$id = $_GET['id'];
+require 'config.php';
 
-		$sql = "SELECT v.*, m.nome marca
-			      FROM veiculos v
-			 LEFT JOIN marcas m
-					ON v.marcaID = m.id
-				 WHERE v.dataExclusao IS NULL
-				   AND v.id = '$id'";
-				   
-		$query = $conexao->query($sql);
-		
-		
-		if($query->num_rows == 1)
-		{
-			$veiculo = mysqli_fetch_assoc($query);
+if(isset($_POST['cadastrar'])) {
+    $veiculo = mysqli_real_escape_string($conexao, $_POST['veiculo']);
+    $ano = mysqli_real_escape_string($conexao, $_POST['ano']);
+    $modelo = mysqli_real_escape_string($conexao, $_POST['modelo']);
+    $descricao = mysqli_real_escape_string($conexao, $_POST['descricao']);
 
-			$res = [
-				'data' => $veiculo
-			];
-			echo json_encode($res);
-			return;
-		}
-		else
-		{
-			exit('Veículo não encontrado.')
-		}
-	}
-	
-	if(isset($_POST['editar']))
-	{
-		
-		//$marca = $_POST['marcaID'];
-		$id = $_POST['id'];
-		$marca = '1';
-		$veiculo = $_POST['veiculo'];
-        $ano = $_POST['ano'];
-		$modelo = $_POST['modelo'];
-		$descricao = $_POST['descricao'];
-		$vendido = $_POST['vendido'] ? '1' : '0';
-		$dataCriacao = 'sysdate()';
-		$dataVenda = $vendido ? 'sysdate()' : '';
-		
-		$sql = "UPDATE veiculos SET
-					   marcaID = '$marca',
-					   veiculo = '$veiculo',
-					   ano = '$ano',
-					   modelo = '$modelo',
-					   descricao = '$descricao'
-					   dataAtualizacao = sysdate()
-				 WHERE id = '$id'";
-		
-		$query = $conexao->query($sql);
-	}
-	
-	if(isset($_POST['deletar']))
-	{
-		$id = $_POST['id'];
+    if($veiculo == NULL || $ano == NULL || $modelo == NULL || $descricao == NULL)
+    {
+        $res = [
+            'status' => 1,
+            'message' => 'Todos os campos são obrigatórios'
+        ];
+        echo json_encode($res);
+        return;
+    }
 
-		$sql = "UPDATE veiculos SET 
-					   dataExclusao = sysdate() 
+    $sql = "INSERT INTO veiculos(veiculo,ano,modelo,descricao,dataCriacao) 
+				   VALUES ('$veiculo','$ano','$modelo','$descricao', sysdate())";
+    $query = mysqli_query($conexao, $sql);
+
+    if($query)
+    {
+        $res = [
+            'status' => 2,
+            'message' => 'Veículo cadastrado com sucesso.'
+        ];
+        echo json_encode($res);
+        return;
+    }
+    else
+    {
+        $res = [
+            'status' => 3,
+            'message' => 'Erro ao cadastrar.'
+        ];
+        echo json_encode($res);
+        return;
+    }
+}
+
+
+if(isset($_POST['editar'])) {
+    $id = mysqli_real_escape_string($conexao, $_POST['id']);
+    $veiculo = mysqli_real_escape_string($conexao, $_POST['veiculo']);
+    $ano = mysqli_real_escape_string($conexao, $_POST['ano']);
+    $modelo = mysqli_real_escape_string($conexao, $_POST['modelo']);
+    $descricao = mysqli_real_escape_string($conexao, $_POST['descricao']);
+
+    if($veiculo == NULL || $ano == NULL || $modelo == NULL || $descricao == NULL)
+    {
+        $res = [
+            'status' => 1,
+            'message' => 'Todos os campos são obrigatórios'
+        ];
+        echo json_encode($res);
+        return;
+    }
+
+    $sql = "UPDATE veiculos SET
+					 veiculo = '$veiculo',
+					 ano = '$ano',
+					 modelo = '$modelo',
+					 descricao = '$descricao',
+					 dataAtualizacao = sysdate()
+			   WHERE id = '$id'";
+    $query = mysqli_query($conexao, $sql);
+
+    if($query)
+    {
+        $res = [
+            'status' => 2,
+            'message' => 'Veículo editado com sucesso.'
+        ];
+        echo json_encode($res);
+        return;
+    }
+    else
+    {
+        $res = [
+            'status' => 3,
+            'message' => 'Erro ao editar.'
+        ];
+        echo json_encode($res);
+        return;
+    }
+}
+
+
+if(isset($_GET['id'])) {
+    $id = mysqli_real_escape_string($conexao, $_GET['id']);
+
+    $sql = "SELECT * FROM veiculos WHERE id='$id'";
+    $query = mysqli_query($conexao, $sql);
+
+    if(mysqli_num_rows($query) == 1)
+    {
+        $veiculo = mysqli_fetch_array($query);
+
+        $res = [
+            'data' => $veiculo
+        ];
+        echo json_encode($res);
+        return;
+    }
+    else
+    {
+        $res = [
+            'message' => 'Veículo não encontrado.'
+        ];
+        echo json_encode($res);
+        return;
+    }
+}
+
+if(isset($_POST['deletar'])) {
+    $id = mysqli_real_escape_string($conexao, $_POST['id']);
+
+    $sql = "UPDATE veiculos SET 
+					 dataExclusao = sysdate() 
 				 WHERE id='$id'";
-				   
-		$query = $conexao->query($sql);
-	}
+    $query = mysqli_query($conexao, $sql);
+
+    if($query)
+    {
+        $res = [
+            'status' => 1,
+            'message' => 'Veículo deletado com sucesso.'
+        ];
+        echo json_encode($res);
+        return;
+    }
+    else
+    {
+        $res = [
+            'status' => 2,
+            'message' => 'Erro ao deletar.'
+        ];
+        echo json_encode($res);
+        return;
+    }
+}
 
 ?>
